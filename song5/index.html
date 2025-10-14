@@ -1,34 +1,36 @@
-<!doctype html>
-<html lang="zh-CN">
+<!doctype html> <!-- 声明HTML文档类型 -->
+<html lang="zh-CN"> <!-- 设置语言为中文 -->
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>海绵宝宝 </title>
+  <meta charset="UTF-8"> <!-- 解决中文乱码 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 手机端自适应 -->
+  <title>海绵宝宝</title> <!-- 网页标题 -->
   <style>
-   /* ✅ 整体居中布局 */
+  /* ✅ 整体居中布局 */
   body { 
-    font-family: sans-serif; 
-    background: #f0f0f0; 
+    font-family: sans-serif; /* 无衬线字体 */
+    background: #f0f8ff; /* 柔和的浅蓝色背景，更符合海洋风格 */
     margin: 0;
-    height: 100vh; /* 占满整个屏幕高度 */
+    height: 100vh; /* 页面高度占满整个屏幕 */
     display: flex;
     flex-direction: column;
     align-items: center; /* 水平居中 */
-    justify-content: flex-start;
-padding-top: 40px;
+    justify-content: flex-start; /* 从上往下排列 */
+    padding-top: 40px; /* 顶部留空 */
+    overflow-y: auto; /* ✅ 允许上下滚动，防止内容被遮挡 */
   }
 
+  /* ✅ 标题样式 */
   h1 { 
-    margin-bottom: 10px; 
-    color: #333; 
+    margin-bottom: 10px;
+    color: #0066cc; /* 蓝色标题，海洋风 */
   }
 
   /* ✅ 封面图片 */
   img { 
-    max-width: 60%; 
-    border-radius: 12px; 
-    margin: 20px 0; 
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1); /* 增加轻微阴影，美观 */
+    max-width: 45%; /* ✅ 图片宽度占屏幕45%，避免太大 */
+    border-radius: 12px; /* 圆角 */
+    margin: 20px 0; /* 上下留白 */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1); /* 阴影效果 */
   }
 
   /* ✅ 音乐播放器 */
@@ -38,24 +40,26 @@ padding-top: 40px;
     max-width: 400px; 
   }
 
+  /* ✅ 提示文字 */
   p { 
     color: #555; 
     margin-top: 15px; 
   }
   </style>
 </head>
+
 <body>
-  <h1>海绵宝宝</h1>
+  <h1>海绵宝宝</h1> <!-- 页面标题 -->
 
   <!-- 封面图 -->
   <img src="海绵宝宝.jpg" alt="海绵宝宝 封面">
 
-  <!-- MP3 播放 -->
+  <!-- 音乐播放器 -->
   <audio controls>
     <source src="海绵宝宝.aac" type="audio/mpeg">
     您的浏览器不支持 audio 标签。
   </audio>
 
-  <p>Click the play button to start the song</p>
+  <p>Click the play button to start the song</p> <!-- 英文提示 -->
 </body>
 </html>
