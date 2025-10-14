@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>海绵宝宝 </title>
+  <style>
+   /* ✅ 整体居中布局 */
+  body { 
+    font-family: sans-serif; 
+    background: #f0f0f0; 
+    margin: 0;
+    height: 100vh; /* 占满整个屏幕高度 */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 水平居中 */
+    justify-content: flex-start;
+padding-top: 40px;
+
+  h1 { 
+    margin-bottom: 10px; 
+    color: #333; 
+  }
+
+  /* ✅ 封面图片 */
+  img { 
+    max-width: 80%; 
+    border-radius: 12px; 
+    margin: 20px 0; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1); /* 增加轻微阴影，美观 */
+  }
+
+  /* ✅ 音乐播放器 */
+  audio { 
+    margin-top: 10px; 
+    width: 80%; 
+    max-width: 400px; 
+  }
+
+  p { 
+    color: #555; 
+    margin-top: 15px; 
+  }
+  </style>
+</head>
+<body>
+  <h1>海绵宝宝</h1>
+
+  <!-- 封面图 -->
+  <img src="海绵宝宝.jpg" alt="海绵宝宝 封面">
+
+  <!-- MP3 播放 -->
+  <audio controls>
+    <source src="海绵宝宝.aac" type="audio/mpeg">
+    您的浏览器不支持 audio 标签。
+  </audio>
+
+  <p>Click the play button to start the song</p>
+</body>
+</html>
