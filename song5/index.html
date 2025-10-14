@@ -1,101 +1,107 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>海绵宝宝</title>
+  <meta charset="UTF-8"> <!-- 设置网页字符编码为UTF-8 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 让页面在手机上自适应宽度 -->
+  <title>海绵宝宝</title> <!-- 网页标题 -->
   <style>
   /* 🌊 页面整体布局 */
   body { 
-    font-family: sans-serif;
-    margin: 0;
-    min-height: 100vh; /* 至少占满屏幕，高度可以自动增长 */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding-top: 40px;
-    overflow-y: auto;
-    background: #87cefa; /* 浅蓝背景 */
-    position: relative;
+    font-family: sans-serif;        /* 设置字体 */
+    margin: 0;                      /* 去掉默认边距 */
+    min-height: 100vh;              /* 页面高度至少占满屏幕 */
+    display: flex;                  /* 使用Flexbox布局 */
+    flex-direction: column;         /* 垂直排列 */
+    align-items: center;            /* 水平居中 */
+    padding-top: 40px;              /* 顶部间距 */
+    overflow-y: auto;               /* 内容超出可滚动 */
+    background: #87cefa;            /* 浅蓝背景，海底风格 */
+    position: relative;             /* 相对定位，气泡绝对定位的参考 */
   }
 
-  /* 🌟 标题 */
+  /* 🌟 标题样式 */
   h1 { 
-    margin-bottom: 10px;
-    color: #ffcc00;
-    text-shadow: 1px 1px 2px #333;
-    z-index: 1;
-    position: relative;
+    margin-bottom: 10px;            /* 标题下间距 */
+    color: #ffcc00;                 /* 黄色标题 */
+    text-shadow: 1px 1px 2px #333;  /* 加阴影，更醒目 */
+    z-index: 1;                     /* 保证在气泡前面 */
+    position: relative;             /* 相对定位 */
   }
 
   /* 🖼️ 封面图片 */
   img { 
-    max-width: 45%;
-    border-radius: 12px;
-    margin: 20px 0;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    z-index: 1;
-    position: relative;
+    max-width: 45%;                 /* 图片最大宽度占屏幕45% */
+    border-radius: 12px;            /* 圆角 */
+    margin: 20px 0;                 /* 上下间距 */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* 阴影 */
+    z-index: 1;                      /* 在气泡前面 */
+    position: relative;              /* 相对定位 */
   }
 
   /* 🎵 音乐播放器 */
   audio { 
-    margin-top: 10px; 
-    width: 80%; 
-    max-width: 400px; 
-    z-index: 1;
-    position: relative;
+    margin-top: 10px;               /* 上方间距 */
+    width: 90%;                     /* 播放器宽度占屏幕90% */
+    max-width: 500px;               /* 最大宽度500px */
+    height: 8vh;                     /* 高度按屏幕高度的8%自适应 */
+    z-index: 1;                     /* 在气泡前面 */
+    position: relative;             /* 相对定位 */
   }
 
   /* 📝 提示文字 */
   p { 
-    color: #fff;
-    margin-top: 15px; 
-    z-index: 1;
-    position: relative;
+    color: #fff;                     /* 白色文字 */
+    margin-top: 15px;                /* 上方间距 */
+    z-index: 1;                       /* 在气泡前面 */
+    position: relative;               /* 相对定位 */
+    font-size: 18px;                  /* 字体大小 */
+    text-align: center;               /* 居中 */
   }
 
   /* 🫧 气泡样式 */
   .bubble {
-    position: absolute;
-    bottom: -50px; /* 从底部开始 */
-    background: rgba(255,255,255,0.7);
-    border-radius: 50%;
-    opacity: 0.6;
-    animation: rise 6s linear infinite;
+    position: absolute;               /* 绝对定位 */
+    bottom: -50px;                    /* 初始位置在屏幕底部下方 */
+    background: rgba(255,255,255,0.7); /* 半透明白色 */
+    border-radius: 50%;               /* 圆形 */
+    opacity: 0.6;                     /* 初始透明度 */
+    animation: rise 6s linear infinite; /* 上升动画 */
   }
 
   /* 🫧 气泡上升动画 */
   @keyframes rise {
     0% {
-      transform: translateY(0) scale(1);
-      opacity: 0.6;
+      transform: translateY(0) scale(1); /* 初始位置 */
+      opacity: 0.6;                     /* 初始透明度 */
     }
     50% {
-      opacity: 0.8;
+      opacity: 0.8;                     /* 中途稍亮 */
     }
     100% {
-      transform: translateY(-120vh) scale(1.2);
-      opacity: 0;
+      transform: translateY(-120vh) scale(1.2); /* 上升到屏幕上方外 */
+      opacity: 0;                        /* 渐隐 */
     }
   }
   </style>
 </head>
 <body>
+  <!-- 🌟 标题 -->
   <h1>海绵宝宝</h1>
 
-  <img src="海绵宝宝.png" alt="海绵宝宝 封面">
+  <!-- 🖼️ 封面图片 -->
+  <img src="海绵宝宝.jpg" alt="海绵宝宝 封面">
 
+  <!-- 🎵 音乐播放器，支持 MP3 和 AAC -->
   <audio controls>
-    <source src="海绵宝宝.aac" type="audio/mpeg">
+    <source src="海绵宝宝.mp3" type="audio/mpeg"> <!-- MP3 -->
+    <source src="海绵宝宝.aac" type="audio/aac">   <!-- AAC -->
     您的浏览器不支持 audio 标签。
   </audio>
 
+  <!-- 📝 提示文字 -->
   <p>Click the play button to start the song</p>
 
-  <!-- 🫧 自动生成大量气泡 -->
-  <!-- 这里我用HTML写了20个气泡，大小、位置和延迟随机设置 -->
+  <!-- 🫧 自动生成气泡 -->
   <div class="bubble" style="width:12px;height:12px;left:5%;animation-delay:0s;"></div>
   <div class="bubble" style="width:18px;height:18px;left:10%;animation-delay:1s;"></div>
   <div class="bubble" style="width:14px;height:14px;left:15%;animation-delay:0.5s;"></div>
