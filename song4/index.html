@@ -1,60 +1,63 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>盗墓笔记</title>
+  <meta charset="UTF-8"> <!-- 指定网页字符编码，防止中文乱码 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 让网页在手机上自适应宽度 -->
+  <title>盗墓笔记 </title> <!-- 网页标题，可改为歌曲名 -->
   <style>
-   /* ✅ 整体居中布局 */
-  body { 
-    font-family: sans-serif; 
-    background: #f0f0f0; 
-    margin: 0;
-    height: 100vh; /* 占满整个屏幕高度 */
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* 水平居中 */
-    justify-content: flex-start;
-padding-top: 40px;
+    body {
+      font-family: sans-serif;  /* 设置通用字体 */
+      background: #f0f0f0;      /* 背景浅灰色，简洁干净 */
+      margin: 0;                /* 去掉默认外边距 */
+      min-height: 100vh;        /* 页面最小高度为屏幕高度 */
+      display: flex;            /* 使用弹性布局 */
+      flex-direction: column;   /* 元素纵向排列 */
+      align-items: center;      /* 水平居中 */
+      justify-content: flex-start; /* 顶部对齐内容 */
+      padding: 40px 0;          /* 上下留白，避免内容太贴边 */
+      overflow-y: auto;         /* 启用垂直滚动，防止内容被遮住 */
+    }
 
-  h1 { 
-    margin-bottom: 10px; 
-    color: #333; 
-  }
+    h1 {
+      color: #333;              /* 标题颜色深灰 */
+      margin-bottom: 15px;      /* 下方留空 */
+    }
 
-  /* ✅ 封面图片 */
-  img { 
-    max-width: 60%; 
-    border-radius: 12px; 
-    margin: 20px 0; 
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1); /* 增加轻微阴影，美观 */
-  }
+    img {
+      max-width: 70%;           /* 图片最大宽度为屏幕70%，适中 */
+      height: auto;             /* 高度按比例自适应 */
+      border-radius: 12px;      /* 图片四角圆润 */
+      margin: 20px 0;           /* 上下间距 */
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1); /* 添加轻微阴影 */
+    }
 
-  /* ✅ 音乐播放器 */
-  audio { 
-    margin-top: 10px; 
-    width: 80%; 
-    max-width: 400px; 
-  }
+    audio {
+      width: 90%;               /* 播放器宽度占屏幕90% */
+      max-width: 500px;         /* 最大宽度不超过500px */
+      height: 60px;             /* 播放条加高，便于点击 */
+      margin-top: 15px;         /* 上方留空 */
+    }
 
-  p { 
-    color: #555; 
-    margin-top: 15px; 
-  }
+    p {
+      color: #555;              /* 文字颜色中灰 */
+      margin-top: 10px;         /* 上方间距 */
+    }
   </style>
 </head>
 <body>
-  <h1>盗墓笔记</h1>
+  <h1>十年人间</h1> <!-- 显示歌曲名 -->
 
-  <!-- 封面图 -->
-  <img src="盗墓笔记.jpg" alt="盗墓笔记 封面">
+  <!-- 封面图（优先加载PNG，不存在则自动切换为JPG） -->
+  <img src="盗墓笔记.png" alt="盗墓笔记"
+       onerror="this.onerror=null;this.src='歌曲封面.jpg';">
 
-  <!-- MP3 播放 -->
+  <!-- 音乐播放器（兼容MP3和AAC格式） -->
   <audio controls>
-    <source src="十年人间.aac" type="audio/mpeg">
-    您的浏览器不支持 audio 标签。
+    <source src="十年人间.mp3" type="audio/mpeg">  <!-- 优先加载MP3 -->
+    <source src="十年人间.aac" type="audio/aac">   <!-- 如果MP3不可用则加载AAC -->
+    您的浏览器不支持音频播放。
   </audio>
 
-  <p>Click the play button to start the song</p>
+  <p>点击播放按钮欣赏音乐 🎵</p> <!-- 提示文字 -->
 </body>
 </html>
