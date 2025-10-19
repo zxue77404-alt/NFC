@@ -1,180 +1,88 @@
-<!doctype html>
-<html lang="zh-CN">
+<!DOCTYPE html>
+<html lang="zh">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Made You Look - 动态波纹</title>
+<title>歌词显示</title>
 <style>
   body {
     margin: 0;
-    font-family: "Segoe UI", sans-serif;
+    height: 100vh;
+    background: url('cover.jpg') center/cover no-repeat; /* 可换成纯色 */
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    justify-content: flex-start;
-    min-height: 100vh;
     overflow: hidden;
-    background: #111;
-    color: #fff;
+    backdrop-filter: blur(10px);
   }
 
-  h1 {
-    margin: 20px 0 10px;
+  /* 半透明遮罩，让背景更柔和 */
+  .overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    z-index: 0;
+  }
+
+  /* 波纹容器 */
+  .wave {
+    position: absolute;
+    bottom: 0;
+    width: 200%;
+    height: 120px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 40%;
+    animation: wave 8s infinite linear;
+    filter: blur(10px);
+    z-index: 1;
+  }
+
+  @keyframes wave {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* 歌词 */
+  .lyrics {
+    position: relative;
+    z-index: 2;
+    color: white;
     font-size: 28px;
     text-align: center;
-    z-index: 2;
-    position: relative;
-    text-shadow: 0 0 8px #fff;
-  }
-
-  #lyrics-container {
-    position: relative;
-    width: 90%;
-    max-width: 550px;
-    height: 360px;
-    overflow-y: auto;
-    background: rgba(0,0,0,0.4);
-    border-radius: 20px;
-    padding: 25px;
-    text-align: center;
-    line-height: 1.8;
-    z-index: 2;
-    backdrop-filter: blur(6px);
-  }
-
-  .line {
-    color: rgba(255,255,255,0.7);
-    font-size: 16px;
-    margin: 6px 0;
-    transition: all 0.3s ease;
-  }
-
-  .active {
-    color: #ff4081;
-    font-weight: bold;
-    font-size: 18px;
-    text-shadow: 0 0 12px #ff4081;
-  }
-
-  audio {
-    width: 90%;
-    max-width: 500px;
-    height: 60px;
-    margin: 20px 0;
-    border-radius: 12px;
-    z-index: 2;
-    position: relative;
-  }
-
-  canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1;
+    line-height: 1.6;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    max-width: 80%;
   }
 </style>
 </head>
 <body>
-<h1>Made You Look</h1>
-
-<div id="lyrics-container">🎵 正在加载歌词...</div>
-
-<audio id="player" controls>
-  <source src="Made you look.mp3" type="audio/mpeg">
-  <source src="Made you look.aac" type="audio/aac">
-  您的浏览器不支持音频播放。
-</audio>
-
-<canvas id="wave"></canvas>
+  <div class="overlay"></div>
+  <div class="lyrics" id="lyrics">
+    等待歌词加载中...
+  </div>
+  <div class="wave"></div>
 
 <script>
-  const audio = document.getElementById('player');
-  const lyricsContainer = document.getElementById('lyrics-container');
-  let lrcData = [];
-  let activeIndex = -1;
+  // 简易LRC歌词示例
+  const lrc = `[00:00.00] 夜空中最亮的星
+[00:10.00] 能否听清
+[00:20.00] 那仰望的人心里的孤独和叹息
+[00:30.00] 啊——`;
 
-  // 加载LRC歌词
-  fetch('Made you look.lrc')
-    .then(res => res.text())
-    .then(parseLRC)
-    .catch(() => lyricsContainer.textContent = "❌ 找不到歌词文件。");
+  const lyricsDiv = document.getElementById('lyrics');
+  const lines = lrc.split('\n');
+  let index = 0;
 
-  function parseLRC(text){
-    const lines = text.split('\n');
-    lrcData = [];
-    lines.forEach(line=>{
-      const match = line.match(/\[(\d{2}):(\d{2}\.\d{2})\](.*)/);
-      if(match){
-        const min=parseInt(match[1]);
-        const sec=parseFloat(match[2]);
-        const time=min*60+sec;
-        const content=match[3].trim();
-        if(content) lrcData.push({time, content});
-      }
-    });
-    lrcData.sort((a,b)=>a.time-b.time);
-    lyricsContainer.innerHTML = lrcData.map(l=>`<div class="line">${l.content}</div>`).join('');
-  }
-
-  // 歌词同步
-  audio.addEventListener('timeupdate',()=>{
-    if(lrcData.length===0) return;
-    const current = audio.currentTime;
-    for(let i=0;i<lrcData.length;i++){
-      if(current >= lrcData[i].time && (i===lrcData.length-1 || current < lrcData[i+1].time)){
-        if(i !== activeIndex){
-          activeIndex=i;
-          updateActiveLine();
-        }
-        break;
-      }
-    }
-  });
-
-  function updateActiveLine(){
-    const lines = lyricsContainer.querySelectorAll('.line');
-    lines.forEach((line,i)=>line.classList.toggle('active', i===activeIndex));
-    const activeLine = lines[activeIndex];
-    if(activeLine){
-      lyricsContainer.scrollTop = activeLine.offsetTop - lyricsContainer.clientHeight/2 + activeLine.clientHeight/2;
+  function showNextLine() {
+    if (index < lines.length) {
+      const text = lines[index].replace(/\[.*?\]/, '').trim();
+      lyricsDiv.textContent = text || '♪';
+      index++;
+      setTimeout(showNextLine, 4000);
     }
   }
 
-  // 🌊 波纹动画
-  const canvas=document.getElementById('wave');
-  const ctx=canvas.getContext('2d');
-  let W=canvas.width=window.innerWidth;
-  let H=canvas.height=window.innerHeight;
-
-  const wave = { t:0 };
-
-  function drawWave(){
-    ctx.clearRect(0,0,W,H);
-    const gradient = ctx.createLinearGradient(0,0,W,H);
-    gradient.addColorStop(0,'#ff6a6a');
-    gradient.addColorStop(0.5,'#ff4081');
-    gradient.addColorStop(1,'#ff6a6a');
-
-    ctx.fillStyle = gradient;
-    ctx.beginPath();
-    ctx.moveTo(0,H/2);
-    for(let x=0;x<W;x+=1){
-      const y = H/2 + Math.sin((x*0.02)+wave.t)*30*Math.sin(wave.t/10);
-      ctx.lineTo(x,y);
-    }
-    ctx.lineTo(W,H);
-    ctx.lineTo(0,H);
-    ctx.closePath();
-    ctx.fill();
-    wave.t+=0.05;
-    requestAnimationFrame(drawWave);
-  }
-  drawWave();
-
-  window.addEventListener('resize',()=>{
-    W=canvas.width=window.innerWidth;
-    H=canvas.height=window.innerHeight;
-  });
+  showNextLine();
 </script>
 </body>
 </html>
