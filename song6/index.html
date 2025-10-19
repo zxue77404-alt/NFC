@@ -1,88 +1,192 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>歌词显示</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Made You Look</title>
 <style>
+  /* 🌌 全局背景与字体 */
   body {
     margin: 0;
-    height: 100vh;
-    background: url('cover.jpg') center/cover no-repeat; /* 可换成纯色 */
+    font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+    min-height: 100vh;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    justify-content: flex-start;
     overflow: hidden;
-    backdrop-filter: blur(10px);
+    background: url('cover.jpg') center/cover no-repeat;
   }
 
-  /* 半透明遮罩，让背景更柔和 */
+  /* 背景模糊层 */
   .overlay {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.4);
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    backdrop-filter: blur(15px);
+    background: rgba(0,0,0,0.35);
     z-index: 0;
   }
 
-  /* 波纹容器 */
-  .wave {
-    position: absolute;
-    bottom: 0;
-    width: 200%;
-    height: 120px;
-    background: rgba(255,255,255,0.15);
-    border-radius: 40%;
-    animation: wave 8s infinite linear;
-    filter: blur(10px);
-    z-index: 1;
-  }
-
-  @keyframes wave {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
-  }
-
-  /* 歌词 */
-  .lyrics {
+  h1 {
     position: relative;
     z-index: 2;
-    color: white;
+    margin: 25px 0 10px;
     font-size: 28px;
-    text-align: center;
-    line-height: 1.6;
+    color: #fff;
     text-shadow: 0 2px 6px rgba(0,0,0,0.6);
-    max-width: 80%;
+    text-align: center;
+  }
+
+  /* 🎤 歌词容器 */
+  #lyrics {
+    position: relative;
+    z-index: 2;
+    width: 90%;
+    max-width: 550px;
+    height: 360px;
+    padding: 25px 20px;
+    background: rgba(0,0,0,0.35);
+    border-radius: 20px;
+    overflow-y: auto;
+    line-height: 1.8;
+    text-align: center;
+    scroll-behavior: smooth;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    color: #eee;
+    font-size: 16px;
+  }
+
+  /* 当前行高亮 */
+  .line {
+    margin: 6px 0;
+    transition: all 0.3s;
+    color: rgba(255,255,255,0.7);
+  }
+
+  .active {
+    color: #ff4081;
+    font-weight: 600;
+    font-size: 18px;
+    transform: scale(1.05);
+    text-shadow: 0 0 12px rgba(255,64,129,0.5);
+  }
+
+  /* 🎵 音乐播放器 */
+  audio {
+    width: 90%;
+    max-width: 500px;
+    margin: 25px 0;
+    border-radius: 12px;
+    height: 60px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 2;
+  }
+
+  /* 提示文字 */
+  p {
+    position: relative;
+    z-index: 2;
+    color: #ddd;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+
+  /* 滚动条美化 */
+  #lyrics::-webkit-scrollbar {
+    width: 6px;
+  }
+  #lyrics::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 6px;
+  }
+
+  /* 底部渐变条，不挡歌词 */
+  .bottom-wave {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 80px;
+    background: linear-gradient(to top, rgba(255,64,129,0.25), transparent);
+    z-index: 1;
+    pointer-events: none;
   }
 </style>
 </head>
 <body>
-  <div class="overlay"></div>
-  <div class="lyrics" id="lyrics">
-    等待歌词加载中...
-  </div>
-  <div class="wave"></div>
+
+<div class="overlay"></div>
+
+<h1>Made You Look</h1>
+
+<div id="lyrics">🎵 正在加载歌词...</div>
+
+<audio id="player" controls>
+  <source src="Made you look.mp3" type="audio/mpeg">
+  <source src="Made you look.aac" type="audio/aac">
+  您的浏览器不支持音频播放。
+</audio>
+
+<p>点击播放按钮欣赏音乐 🎶</p>
+
+<div class="bottom-wave"></div>
 
 <script>
-  // 简易LRC歌词示例
-  const lrc = `[00:00.00] 夜空中最亮的星
-[00:10.00] 能否听清
-[00:20.00] 那仰望的人心里的孤独和叹息
-[00:30.00] 啊——`;
+const audio = document.getElementById('player');
+const lyricsContainer = document.getElementById('lyrics');
+let lrcData = [];
+let activeIndex = -1;
 
-  const lyricsDiv = document.getElementById('lyrics');
-  const lines = lrc.split('\n');
-  let index = 0;
+// 载入歌词
+fetch('Made you look.lrc')
+  .then(res => res.text())
+  .then(parseLRC)
+  .catch(() => lyricsContainer.textContent = "❌ 找不到歌词文件。");
 
-  function showNextLine() {
-    if (index < lines.length) {
-      const text = lines[index].replace(/\[.*?\]/, '').trim();
-      lyricsDiv.textContent = text || '♪';
-      index++;
-      setTimeout(showNextLine, 4000);
+// 解析LRC
+function parseLRC(text){
+  const lines = text.split('\n');
+  for (let line of lines){
+    const match = line.match(/\[(\d{2}):(\d{2}\.\d{2})\](.*)/);
+    if(match){
+      const min = parseInt(match[1]);
+      const sec = parseFloat(match[2]);
+      const content = match[3].trim();
+      if(content) lrcData.push({time: min*60+sec, content});
     }
   }
+  if(lrcData.length === 0){
+    lyricsContainer.textContent = "暂无歌词。";
+    return;
+  }
+  lrcData.sort((a,b)=>a.time-b.time);
+  lyricsContainer.innerHTML = lrcData.map(l=>`<div class="line">${l.content}</div>`).join('');
+}
 
-  showNextLine();
+// 歌词同步
+audio.addEventListener('timeupdate', ()=>{
+  if(lrcData.length===0) return;
+  const current = audio.currentTime;
+  for(let i=0;i<lrcData.length;i++){
+    if(current >= lrcData[i].time && (i===lrcData.length-1 || current < lrcData[i+1].time)){
+      if(i !== activeIndex){
+        activeIndex = i;
+        updateActiveLine();
+      }
+      break;
+    }
+  }
+});
+
+function updateActiveLine(){
+  const lines = lyricsContainer.querySelectorAll('.line');
+  lines.forEach((line,i)=>line.classList.toggle('active', i===activeIndex));
+  const activeLine = lines[activeIndex];
+  if(activeLine){
+    lyricsContainer.scrollTop = activeLine.offsetTop - lyricsContainer.clientHeight/2 + activeLine.clientHeight/2;
+  }
+}
 </script>
 </body>
 </html>
