@@ -5,85 +5,117 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Made You Look</title>
   <style>
+    /* 🌈 背景与全局字体 */
     body {
-      font-family: sans-serif;
-      background: #f0f0f0;
+      font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+      background: linear-gradient(135deg, #f9e2e8, #e4f0ff);
       margin: 0;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: flex-start;
       padding: 40px 0;
       overflow-y: auto;
     }
 
     h1 {
       color: #333;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
+      font-size: 26px;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
+    /* 🎶 歌词盒子 */
     #lyrics {
       width: 90%;
-      max-width: 500px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      padding: 20px;
+      max-width: 550px;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      padding: 30px 25px;
       overflow-y: auto;
-      height: 300px;
+      height: 360px;
       text-align: center;
-      line-height: 1.8;
+      line-height: 1.9;
       scroll-behavior: smooth;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
     }
 
+    /* 🎧 歌词行样式 */
     .line {
-      color: #666;
-      transition: color 0.3s, font-size 0.3s;
+      color: #555;
+      font-size: 16px;
+      margin: 6px 0;
+      transition: color 0.3s, transform 0.3s;
     }
 
+    /* 💡 当前播放行高亮 */
     .active {
-      color: #000;
-      font-weight: bold;
+      color: #e91e63;
+      font-weight: 600;
+      transform: scale(1.1);
+      text-shadow: 0 0 8px rgba(233,30,99,0.5);
       font-size: 18px;
     }
 
+    /* 🎵 播放器 */
     audio {
       width: 90%;
       max-width: 500px;
       height: 60px;
-      margin-top: 20px;
+      margin-top: 25px;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
     }
 
+    /* 提示文字 */
     p {
-      color: #555;
-      margin-top: 10px;
+      color: #444;
+      margin-top: 15px;
+      font-size: 15px;
+      opacity: 0.8;
+    }
+
+    /* 滚动条优化 */
+    #lyrics::-webkit-scrollbar {
+      width: 6px;
+    }
+    #lyrics::-webkit-scrollbar-thumb {
+      background: rgba(0,0,0,0.2);
+      border-radius: 6px;
     }
   </style>
 </head>
 <body>
   <h1>Made You Look</h1>
 
-  <div id="lyrics">歌词加载中...</div>
+  <!-- 歌词容器 -->
+  <div id="lyrics">🎵 正在加载歌词...</div>
 
+  <!-- 音频播放器 -->
   <audio id="player" controls>
     <source src="Made you look.mp3" type="audio/mpeg">
     <source src="Made you look.aac" type="audio/aac">
     您的浏览器不支持音频播放。
   </audio>
 
-  <p>点击播放按钮欣赏音乐 🎵</p>
+  <p>点击播放按钮欣赏音乐 🎶</p>
 
   <script>
     const audio = document.getElementById('player');
     const lyricsContainer = document.getElementById('lyrics');
+    let lrcData = [];
+    let activeIndex = -1;
 
-    // 加载LRC歌词文件
+    // 载入歌词
     fetch('Made you look.lrc')
       .then(response => response.text())
-      .then(parseLRC);
+      .then(parseLRC)
+      .catch(() => lyricsContainer.textContent = "❌ 找不到歌词文件。");
 
-    let lrcData = [];
-
+    // 解析LRC歌词
     function parseLRC(text) {
       const lines = text.split('\n');
       for (let line of lines) {
@@ -97,12 +129,18 @@
         }
       }
 
+      if (lrcData.length === 0) {
+        lyricsContainer.textContent = "暂无歌词。";
+        return;
+      }
+
       lrcData.sort((a, b) => a.time - b.time);
       lyricsContainer.innerHTML = lrcData.map(l => `<div class="line">${l.content}</div>`).join('');
     }
 
-    let activeIndex = -1;
+    // 歌词同步
     audio.addEventListener('timeupdate', () => {
+      if (lrcData.length === 0) return;
       const current = audio.currentTime;
       for (let i = 0; i < lrcData.length; i++) {
         if (current >= lrcData[i].time && (i === lrcData.length - 1 || current < lrcData[i + 1].time)) {
@@ -118,7 +156,6 @@
     function updateActiveLine() {
       const lines = lyricsContainer.querySelectorAll('.line');
       lines.forEach((line, i) => line.classList.toggle('active', i === activeIndex));
-
       const activeLine = lines[activeIndex];
       if (activeLine) {
         lyricsContainer.scrollTop = activeLine.offsetTop - lyricsContainer.clientHeight / 2 + activeLine.clientHeight / 2;
