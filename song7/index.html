@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>날봐, 귀순</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f0f0f0;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 0;
+      overflow-y: auto;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 15px;
+    }
+
+    #lyrics {
+      width: 90%;
+      max-width: 500px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      overflow-y: auto;
+      height: 300px;
+      text-align: center;
+      line-height: 1.8;
+      scroll-behavior: smooth;
+    }
+
+    .line {
+      color: #666;
+      transition: color 0.3s, font-size 0.3s;
+    }
+
+    .active {
+      color: #000;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    audio {
+      width: 90%;
+      max-width: 500px;
+      height: 60px;
+      margin-top: 20px;
+    }
+
+    p {
+      color: #555;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Made You Look</h1>
+
+  <div id="lyrics">歌词加载中...</div>
+
+  <audio id="player" controls>
+    <source src="날봐, 귀순.mp3" type="audio/mpeg">
+    <source src="날봐, 귀순.aac" type="audio/aac">
+    您的浏览器不支持音频播放。
+  </audio>
+
+  <p>点击播放按钮欣赏音乐 🎵</p>
+
+  <script>
+    const audio = document.getElementById('player');
+    const lyricsContainer = document.getElementById('lyrics');
+
+    // 加载LRC歌词文件
+    fetch('날봐, 귀순.lrc')
+      .then(response => response.text())
+      .then(parseLRC);
+
+    let lrcData = [];
+
+    function parseLRC(text) {
+      const lines = text.split('\n');
+      for (let line of lines) {
+        const match = line.match(/\[(\d{2}):(\d{2}\.\d{2})\](.*)/);
+        if (match) {
+          const min = parseInt(match[1]);
+          const sec = parseFloat(match[2]);
+          const time = min * 60 + sec;
+          const content = match[3].trim();
+          if (content) lrcData.push({ time, content });
+        }
+      }
+
+      lrcData.sort((a, b) => a.time - b.time);
+      lyricsContainer.innerHTML = lrcData.map(l => `<div class="line">${l.content}</div>`).join('');
+    }
+
+    let activeIndex = -1;
+    audio.addEventListener('timeupdate', () => {
+      const current = audio.currentTime;
+      for (let i = 0; i < lrcData.length; i++) {
+        if (current >= lrcData[i].time && (i === lrcData.length - 1 || current < lrcData[i + 1].time)) {
+          if (i !== activeIndex) {
+            activeIndex = i;
+            updateActiveLine();
+          }
+          break;
+        }
+      }
+    });
+
+    function updateActiveLine() {
+      const lines = lyricsContainer.querySelectorAll('.line');
+      lines.forEach((line, i) => line.classList.toggle('active', i === activeIndex));
+
+      const activeLine = lines[activeIndex];
+      if (activeLine) {
+        lyricsContainer.scrollTop = activeLine.offsetTop - lyricsContainer.clientHeight / 2 + activeLine.clientHeight / 2;
+      }
+    }
+  </script>
+</body>
+</html>
