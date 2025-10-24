@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>날봐, 귀순</title>
 <style>
-  /* ====== 舞台背景 ====== */
+  /* ===== 舞台背景层 ===== */
   body {
     font-family: "Segoe UI", "Helvetica Neue", sans-serif;
     margin: 0;
@@ -16,18 +16,20 @@
     justify-content: flex-start;
     padding: 40px 15px;
     overflow-y: auto;
-    background: radial-gradient(circle at top, #2a003e 0%, #1a0026 70%, #0c0013 100%);
+    background:
+      linear-gradient(rgba(20, 0, 40, 0.55), rgba(5, 0, 15, 0.8)),
+      url("background.jpg") center/cover no-repeat fixed;
     background-attachment: fixed;
     position: relative;
   }
 
-  /* 舞台灯光 */
+  /* 舞台灯光层 */
   .stage-lights {
     position: fixed;
     inset: 0;
     background:
-      radial-gradient(circle at 30% 40%, rgba(255, 100, 200, 0.35), transparent 60%),
-      radial-gradient(circle at 70% 60%, rgba(200, 100, 255, 0.35), transparent 60%),
+      radial-gradient(circle at 20% 40%, rgba(255, 120, 200, 0.35), transparent 60%),
+      radial-gradient(circle at 80% 60%, rgba(160, 120, 255, 0.35), transparent 60%),
       radial-gradient(circle at 50% 90%, rgba(255, 200, 250, 0.25), transparent 70%);
     animation: lightsMove 10s ease-in-out infinite alternate;
     mix-blend-mode: screen;
@@ -40,45 +42,46 @@
     100% { transform: translate(-2%, 3%) scale(1); filter: brightness(1); }
   }
 
-  /* 轻度模糊层（柔化背景） */
+  /* 柔光模糊层 */
   body::before {
     content: "";
     position: fixed;
     inset: 0;
-    background: rgba(50, 0, 80, 0.25);
+    background: rgba(40, 0, 80, 0.25);
     backdrop-filter: blur(4px);
     z-index: -1;
   }
 
-  /* ====== 标题 ====== */
+  /* ===== 标题 ===== */
   h1 {
     color: #fff;
-    text-shadow: 0 3px 10px rgba(255, 100, 200, 0.8);
+    text-shadow: 0 3px 12px rgba(255, 120, 200, 0.9);
     margin-bottom: 25px;
     font-weight: 600;
+    letter-spacing: 1px;
     z-index: 2;
   }
 
-  /* ====== 歌词区 ====== */
+  /* ===== 歌词区 ===== */
   #lyrics {
     width: 90%;
     max-width: 520px;
-    background: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.25);
     border-radius: 16px;
-    box-shadow: 0 8px 30px rgba(255, 100, 200, 0.15);
+    box-shadow: 0 8px 30px rgba(255, 120, 220, 0.15);
     padding: 20px;
     overflow-y: auto;
     height: 320px;
     text-align: center;
     line-height: 1.8;
     scroll-behavior: smooth;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px);
     position: relative;
     z-index: 2;
     transition: background 0.5s ease;
   }
 
-  /* 歌词上下渐隐效果 */
+  /* 渐隐遮罩 */
   #lyrics::before, #lyrics::after {
     content: "";
     position: absolute;
@@ -88,23 +91,20 @@
     pointer-events: none;
     z-index: 1;
   }
-
   #lyrics::before {
     top: 0;
     background: linear-gradient(to bottom, rgba(255,255,255,0.6), transparent);
   }
-
   #lyrics::after {
     bottom: 0;
     background: linear-gradient(to top, rgba(255,255,255,0.6), transparent);
   }
 
-  /* ====== 歌词文字 ====== */
+  /* 歌词行样式 */
   .line {
     color: #333;
     transition: color 0.3s, font-size 0.3s, transform 0.3s, text-shadow 0.3s;
   }
-
   .active {
     color: #fff;
     font-weight: bold;
@@ -112,19 +112,20 @@
     transform: scale(1.08);
     text-shadow:
       0 0 10px rgba(255, 160, 240, 0.9),
-      0 0 15px rgba(255, 100, 200, 0.8);
+      0 0 15px rgba(255, 100, 200, 0.8),
+      0 0 25px rgba(180, 80, 255, 0.8);
   }
 
-  /* ====== 音频控制区 ====== */
+  /* 音频播放器 */
   audio {
     width: 90%;
     max-width: 520px;
     height: 50px;
     margin-top: 25px;
     border-radius: 8px;
-    background: rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.35);
     backdrop-filter: blur(6px);
-    box-shadow: 0 4px 15px rgba(255,100,200,0.3);
+    box-shadow: 0 4px 15px rgba(255,120,220,0.3);
     z-index: 2;
   }
 
