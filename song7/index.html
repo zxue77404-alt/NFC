@@ -11,35 +11,29 @@
   body {
     margin: 0;
     padding: 0;
-    font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+    font-family: 'Poppins', 'Segoe UI', 'Helvetica Neue', sans-serif;
     overflow: hidden;
     height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: url("background.jpg") center/cover no-repeat; /* 你自己的照片路径 */
+    background: url("background.jpg") center/cover no-repeat;
     position: relative;
+    color: #fff;
   }
 
-  /* ---- 动态彩色泡泡效果 ---- */
+  /* ---- 炫彩气泡 ---- */
   .bubble {
     position: absolute;
     bottom: -100px;
     border-radius: 50%;
-    opacity: 0.6;
+    opacity: 0.5;
     animation: rise 15s infinite ease-in;
   }
-
   @keyframes rise {
-    0% {
-      transform: translateY(0) scale(1);
-      opacity: 0.6;
-    }
-    100% {
-      transform: translateY(-120vh) scale(1.5);
-      opacity: 0;
-    }
+    0% { transform: translateY(0) scale(1); opacity: 0.6; }
+    100% { transform: translateY(-120vh) scale(1.5); opacity: 0; }
   }
 
   /* ---- 光柱柔光 ---- */
@@ -48,94 +42,123 @@
     top: 0;
     width: 120px;
     height: 100%;
-    background: linear-gradient(to bottom, rgba(255,255,255,0.2), transparent);
+    background: linear-gradient(to bottom, rgba(255,255,255,0.18), transparent);
     filter: blur(60px);
-    opacity: 0.4;
-    animation: beamMove 12s infinite linear;
+    opacity: 0.35;
+    animation: beamMove 15s infinite linear;
   }
-
   @keyframes beamMove {
-    0% { left: -10%; }
+    0% { left: -15%; }
     50% { left: 110%; }
-    100% { left: -10%; }
+    100% { left: -15%; }
   }
 
+  /* ---- 标题 ---- */
   h1 {
-    color: white;
-    text-shadow: 0 0 10px rgba(0,0,0,0.7);
+    font-size: 2.4em;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, #ff6ec4, #7873f5, #3ac8ff);
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: hueShift 5s infinite linear, pulse 3s infinite ease-in-out;
+    text-shadow: 0 0 20px rgba(255,255,255,0.5);
+    margin-bottom: 20px;
     z-index: 2;
-    margin-bottom: 15px;
   }
 
+  /* ---- 歌词区 ---- */
   #lyrics {
     width: 90%;
     max-width: 500px;
     height: 320px;
     text-align: center;
-    line-height: 1.8;
-    color: #fff;
     overflow-y: auto;
     z-index: 2;
+    background: transparent;
     padding: 20px;
     border-radius: 12px;
-    background: transparent; /* 完全透明 */
   }
 
   .line {
+    margin: 8px 0;
+    font-size: 16px;
+    text-shadow: 0 0 6px rgba(0,0,0,0.8);
     color: rgba(255,255,255,0.8);
-    transition: color 0.3s, font-size 0.3s, text-shadow 0.3s;
-    text-shadow: 0 0 8px rgba(0,0,0,0.6);
+    transition: all 0.4s ease;
   }
 
   .active {
-    color: #fff;
-    font-weight: bold;
-    font-size: 18px;
-    text-shadow: 0 0 15px #ffffff, 0 0 25px rgba(255,255,255,0.8);
+    font-weight: 600;
+    font-size: 20px;
+    background: linear-gradient(90deg, #ffb6ff, #bfe9ff, #faffd1);
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 25px rgba(255,255,255,0.8);
+    animation: glowPulse 2s infinite ease-in-out;
   }
 
+  /* ---- 音乐播放器 ---- */
   audio {
     width: 90%;
     max-width: 500px;
-    margin-top: 20px;
+    margin-top: 25px;
     z-index: 2;
+    filter: drop-shadow(0 0 8px rgba(255,255,255,0.5));
   }
 
   p {
-    color: white;
+    color: rgba(255,255,255,0.9);
     text-shadow: 0 0 10px rgba(0,0,0,0.8);
-    margin-top: 10px;
+    margin-top: 12px;
     z-index: 2;
+    font-size: 14px;
   }
 
-  /* 确保文字在最上层 */
+  /* ---- 动画特效 ---- */
+  @keyframes hueShift {
+    from { filter: hue-rotate(0deg); }
+    to { filter: hue-rotate(360deg); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.9; }
+  }
+
+  @keyframes glowPulse {
+    0%, 100% { text-shadow: 0 0 10px rgba(255,255,255,0.8); }
+    50% { text-shadow: 0 0 25px rgba(255,255,255,1); }
+  }
+
+  /* 保证文字始终在最上层 */
   h1, #lyrics, audio, p {
     position: relative;
   }
 </style>
 </head>
 <body>
-  <!-- 光柱 -->
+  <!-- 柔光光柱 -->
   <div class="lightbeam" style="animation-delay:0s;"></div>
-  <div class="lightbeam" style="animation-delay:4s; width:80px; opacity:0.3;"></div>
+  <div class="lightbeam" style="animation-delay:5s; width:80px; opacity:0.3;"></div>
 
-  <!-- 彩色泡泡生成 -->
+  <!-- 动态泡泡 -->
   <script>
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 20; i++) {
       const bubble = document.createElement('div');
       bubble.className = 'bubble';
-      const size = Math.random() * 40 + 20;
+      const size = Math.random() * 35 + 15;
       bubble.style.width = `${size}px`;
       bubble.style.height = `${size}px`;
       bubble.style.left = `${Math.random() * 100}%`;
-      bubble.style.background = `radial-gradient(circle at 30% 30%, hsla(${Math.random()*360},100%,70%,0.8), transparent 70%)`;
+      bubble.style.background = `radial-gradient(circle at 30% 30%, hsla(${Math.random()*360},100%,75%,0.7), transparent 70%)`;
       bubble.style.animationDuration = `${10 + Math.random()*10}s`;
-      bubble.style.animationDelay = `${Math.random()*10}s`;
+      bubble.style.animationDelay = `${Math.random()*8}s`;
       document.body.appendChild(bubble);
     }
   </script>
 
   <h1>날봐, 귀순</h1>
+
   <div id="lyrics">歌词加载中...</div>
 
   <audio id="player" controls>
@@ -144,7 +167,7 @@
     您的浏览器不支持音频播放。
   </audio>
 
-  <p>Click the button to play music 🎵</p>
+  <p>Click ▶ to play and enjoy the stage 🎤</p>
 
   <script>
     const audio = document.getElementById('player');
