@@ -1,123 +1,151 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>날봐, 귀순</title>
-  <style>
-    /* 全局样式 */
-    body {
-      font-family: "Segoe UI", "Helvetica Neue", sans-serif;
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 40px 15px;
-      overflow-y: auto;
-      background: url("background.jpg") center/cover no-repeat fixed; /* 背景图 */
-      position: relative;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>날봐, 귀순</title>
+<style>
+  /* ====== 全局与背景 ====== */
+  body {
+    font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 40px 15px;
+    overflow-y: auto;
+    background: url("background.jpg") center/cover no-repeat fixed;
+    position: relative;
+  }
 
-    /* 背景遮罩层 */
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background: rgba(255, 255, 255, 0.4);
-      backdrop-filter: blur(6px);
-      z-index: -1;
-    }
+  /* 舞台灯光动画层 */
+  .stage-lights {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at 20% 30%, rgba(255,255,200,0.3), transparent 70%),
+                radial-gradient(circle at 80% 70%, rgba(255,180,255,0.25), transparent 70%),
+                radial-gradient(circle at 50% 90%, rgba(150,200,255,0.25), transparent 70%);
+    animation: lightsMove 10s ease-in-out infinite alternate;
+    mix-blend-mode: screen;
+    z-index: 0;
+  }
 
+  @keyframes lightsMove {
+    0% { transform: translate(0, 0) scale(1); filter: brightness(1); }
+    50% { transform: translate(-3%, 2%) scale(1.1); filter: brightness(1.3); }
+    100% { transform: translate(3%, -2%) scale(1); filter: brightness(1); }
+  }
+
+  /* 模糊遮罩层（轻度） */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(3px);
+    z-index: -1;
+  }
+
+  h1 {
+    color: #fff;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+    margin-bottom: 25px;
+    z-index: 2;
+  }
+
+  /* ====== 歌词区 ====== */
+  #lyrics {
+    width: 90%;
+    max-width: 520px;
+    background: rgba(255, 255, 255, 0.55);
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    padding: 20px;
+    overflow-y: auto;
+    height: 320px;
+    text-align: center;
+    line-height: 1.8;
+    scroll-behavior: smooth;
+    backdrop-filter: blur(10px);
+    position: relative;
+    z-index: 2;
+    transition: background 0.5s ease;
+  }
+
+  /* 歌词上、下渐隐 */
+  #lyrics::before, #lyrics::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 30px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  #lyrics::before {
+    top: 0;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.7), transparent);
+  }
+
+  #lyrics::after {
+    bottom: 0;
+    background: linear-gradient(to top, rgba(255,255,255,0.7), transparent);
+  }
+
+  /* 歌词文字 */
+  .line {
+    color: #333;
+    transition: color 0.3s, font-size 0.3s, transform 0.3s, text-shadow 0.3s;
+  }
+
+  .active {
+    color: #000;
+    font-weight: bold;
+    font-size: 18px;
+    transform: scale(1.05);
+    text-shadow: 0 0 8px rgba(255,255,255,0.9), 0 0 12px rgba(255,180,255,0.6);
+  }
+
+  /* ====== 音频播放器 ====== */
+  audio {
+    width: 90%;
+    max-width: 520px;
+    height: 50px;
+    margin-top: 25px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.5);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    z-index: 2;
+  }
+
+  p {
+    color: #fff;
+    margin-top: 12px;
+    font-size: 15px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    z-index: 2;
+  }
+
+  @media (max-width: 480px) {
     h1 {
-      color: #222;
-      text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8);
-      margin-bottom: 20px;
+      font-size: 20px;
     }
-
-    /* 歌词容器 */
     #lyrics {
-      width: 90%;
-      max-width: 500px;
-      background: rgba(255, 255, 255, 0.7);
-      border-radius: 16px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-      padding: 20px;
-      overflow-y: auto;
-      height: 320px;
-      text-align: center;
-      line-height: 1.8;
-      scroll-behavior: smooth;
-      backdrop-filter: blur(10px);
-      position: relative;
+      height: 260px;
+      padding: 16px;
     }
-
-    /* 上下渐变阴影提示可滚动 */
-    #lyrics::before, #lyrics::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      width: 100%;
-      height: 25px;
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    #lyrics::before {
-      top: 0;
-      background: linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(255,255,255,0));
-    }
-
-    #lyrics::after {
-      bottom: 0;
-      background: linear-gradient(to top, rgba(255,255,255,0.9), rgba(255,255,255,0));
-    }
-
-    /* 歌词行样式 */
-    .line {
-      color: #555;
-      transition: color 0.3s, font-size 0.3s, transform 0.3s;
-    }
-
-    .active {
-      color: #000;
-      font-weight: bold;
-      font-size: 18px;
-      transform: scale(1.05);
-    }
-
-    /* 播放器 */
-    audio {
-      width: 90%;
-      max-width: 500px;
-      height: 50px;
-      margin-top: 20px;
-      border-radius: 8px;
-      background: rgba(255,255,255,0.7);
-      backdrop-filter: blur(8px);
-    }
-
-    p {
-      color: #333;
-      margin-top: 12px;
-      font-size: 15px;
-      text-shadow: 0 1px 2px rgba(255,255,255,0.7);
-    }
-
-    @media (max-width: 480px) {
-      h1 {
-        font-size: 20px;
-      }
-      #lyrics {
-        height: 260px;
-        padding: 16px;
-      }
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
-  <h1>날봐, 귀순</h1>
+  <!-- 舞台灯光层 -->
+  <div class="stage-lights"></div>
+
+  <h1>Made You Look</h1>
 
   <div id="lyrics">歌词加载中...</div>
 
@@ -172,7 +200,6 @@
     function updateActiveLine() {
       const lines = lyricsContainer.querySelectorAll('.line');
       lines.forEach((line, i) => line.classList.toggle('active', i === activeIndex));
-
       const activeLine = lines[activeIndex];
       if (activeLine) {
         lyricsContainer.scrollTop = activeLine.offsetTop - lyricsContainer.clientHeight / 2 + activeLine.clientHeight / 2;
